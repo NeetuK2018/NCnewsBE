@@ -11,7 +11,10 @@ exports.up = function (connection, Promise) {
       .integer('votes')
       .defaultTo(0)
       .notNullable();
-    articlesTable.string('topic').references('topics.slug');
+    articlesTable
+      .string('topic')
+      .references('topics.slug')
+      .onDelete('CASCADE');
     articlesTable
       .string('user')
       .references('users.username')

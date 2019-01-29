@@ -1,10 +1,7 @@
 exports.up = function (connection, Promise) {
   console.log('create comments');
   return connection.schema.createTable('comments', (commentsTable) => {
-    commentsTable
-      .integer('comments_id')
-      .primary()
-      .notNullable();
+    commentsTable.increments('comments_id').primary();
     commentsTable
       .string('username')
       .references('users.username')

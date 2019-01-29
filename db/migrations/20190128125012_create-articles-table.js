@@ -16,7 +16,7 @@ exports.up = function (connection, Promise) {
       .references('topics.slug')
       .onDelete('CASCADE');
     articlesTable
-      .string('user')
+      .string('username')
       .references('users.username')
       .onDelete('CASCADE');
     articlesTable.timestamp('created_at').defaultTo(connection.fn.now());
@@ -25,5 +25,5 @@ exports.up = function (connection, Promise) {
 
 exports.down = function (connection, Promise) {
   console.log('dropping articles');
-  return connection.schema.dropTable('users');
+  return connection.schema.dropTable('articles');
 };

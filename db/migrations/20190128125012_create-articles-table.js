@@ -15,7 +15,7 @@ exports.up = function (connection, Promise) {
       .references('topics.slug')
       .onDelete('CASCADE');
     articlesTable
-      .string('username')
+      .string('author')
       .references('users.username')
       .onDelete('CASCADE');
     articlesTable.timestamp('created_at').defaultTo(connection.fn.now());

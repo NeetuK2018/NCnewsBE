@@ -2,7 +2,7 @@ exports.formatArticles = (data) => {
   const formattedArticles = data.map(({ created_by, created_at, ...other }) => ({
     // pull out created by an created at and putt the rest in
     ...other, // others
-    username: created_by, // then map through for username to equal created_by
+    author: created_by, // then map through for username to equal created_by
     created_at: new Date(created_at),
   }));
   return formattedArticles;

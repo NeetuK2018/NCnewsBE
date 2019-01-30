@@ -1,7 +1,7 @@
-const { fetchTopics, postingTopics } = require('../db/models/topics');
+const { fetchTopics, postingTopics, fetchArticlesByTopic } = require('../db/models/topics');
 
 exports.getTopics = (req, res, next) => {
-  console.log('help');
+  // console.log('help');
   fetchTopics()
     .then((topics) => {
       if (!topics) return Promise.reject({ status: 404, message: 'topics not found' });
@@ -17,6 +17,17 @@ exports.addTopics = (req, res, next) => {
   postingTopics(newTopic)
     .then(([topic]) => {
       res.status(201).json({ topic });
+    })
+    .catch(err => console.log(err) || next(err));
+};
+
+exports.getArticlesByTopic = (req, res, next) => {
+  console.log('helloooo', req.params.topics);
+  const articles = req.params.topics;
+
+  fetchTopics(articles)
+    .then((article) => {
+      res.status(200).send({ article });
     })
     .catch(err => console.log(err) || next(err));
 };

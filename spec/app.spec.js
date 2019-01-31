@@ -1,8 +1,10 @@
 process.env.NODE_ENV = 'test';
 const { expect } = require('chai');
+const supertest = require('supertest');
 const app = require('../app');
+
+const request = supertest(app);
 const connection = require('../db/connection');
-const request = require('supertest')(app);
 
 describe('/api', () => {
   after(() => connection.destroy());
@@ -30,6 +32,13 @@ describe('/api', () => {
         expect(body.topics).to.be.an('array');
         expect(body.topics[0]).to.contains.keys('slug', 'description');
       }));
+    it('GET status: 200 responds with the correct number of topics', () => request
+      .get('/api/topics')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.topics).to.have.length(2);
+      }));
+
     it('POST status: 201 it inserts a new topic into topic table', () => request
       .post('/api/topics')
       .send({
@@ -54,13 +63,14 @@ describe('/api', () => {
         expect(body.message).to.equal('invalid input, column does not exist');
       }));
   });
-  describe('/topics', () => {
+  describe('/topics/:topic/articles', () => {
     it('GET status:200 responds with an array of article objects', () => request
       .get('/api/topics/mitch/articles')
       .expect(200)
       .then(({ body }) => {
-        // console.log('articles', body.article[0]);
-        expect(body.article).to.have.length(12);
+        // console.log('articles', body.articles[0]);
+        expect(body.articles).to.be.an('array');
+        expect(body.articles[0].topic).to.equal('mitch');
       }));
     it('GET status: 200 has the correct author of articles displayed', () => request
       .get('/api/topics/mitch/articles')
@@ -68,16 +78,14 @@ describe('/api', () => {
 
       .then(({ body }) => {
         // console.log('articles', body.article[0]);
-        expect(body.article[0].author).to.equal('butter_bridge');
+        expect(body.articles[0].author).to.equal('butter_bridge');
       }));
     it('GET status: 200 each article has all correct columns', () => request
       .get('/api/topics/mitch/articles')
       .expect(200)
       .then(({ body }) => {
-        console.log('articles', body.article[0]);
-        expect(body.article[0]).to.contain.keys(
-          'slug',
-          'description',
+        // console.log('articles!!!!!', body.articles[0]);
+        expect(body.articles[0]).to.contain.keys(
           'article_id',
           'title',
           'body',
@@ -85,15 +93,34 @@ describe('/api', () => {
           'topic',
           'author',
           'created_at',
+          'Comment_count',
         );
       }));
-    it('GET status: 200 each article hs a comment_count', () => request
+    it('GET status: 200 each topics responds with a limit of 10 results DEFAULT CASE', () => request
       .get('/api/topics/mitch/articles')
       .expect(200)
-
       .then(({ body }) => {
-        // console.log('articles', body.article[0]);
-        expect(body.article[0].author).to.equal('butter_bridge');
+        expect(body.articles).to.have.length(10);
+      }));
+    it('GET status: 200 each topics responds with a limit of 6 results when ', () => request
+      .get('/api/topics/mitch/articles?limit=6')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).to.have.length(6);
+      }));
+    it('GET status: 200 each topics responds sorted by date DEFAULT CASE', () => request
+      .get('/api/topics/mitch/articles?sorted_by')
+      .expect(200)
+      .then(({ body }) => {
+        // console.log('dates', body.articles);
+        expect(body.articles[0].title).to.equal('Living in the shadow of a great man');
+      }));
+    it('GET status: 200 each topics responds sorted by comment_count DEFAULT CASE', () => request
+      .get('/api/topics/mitch/articles?sorted_by=Comment_count')
+      .expect(200)
+      .then(({ body }) => {
+        // console.log('dates', body.articles);
+        expect(body.articles[0].Comment_count).to.equal('13');
       }));
   });
 });

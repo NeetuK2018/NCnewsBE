@@ -4,7 +4,7 @@ exports.handle404 = (err, req, res, next) => {
 };
 
 exports.handle400 = (err, req, res, next) => {
-  console.log(err);
+  // console.log(err);
   const { code } = err;
   const errorCodes400 = {
     42703: 'invalid input, column does not exist',

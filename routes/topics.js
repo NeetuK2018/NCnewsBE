@@ -8,6 +8,6 @@ topicsRouter
   .get(getTopics)
   .post(addTopics);
 
-topicsRouter.route('/:topics/articles').get(getArticlesByTopic);
+topicsRouter.route('/:topic/articles').get(getArticlesByTopic);
 
 module.exports = topicsRouter;

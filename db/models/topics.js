@@ -3,7 +3,6 @@ const connection = require('../connection');
 exports.fetchTopics = () => connection
   .select('*')
   .from('topics')
-  .join('articles', 'topics.slug', '=', 'articles.topic')
   .returning('*');
 
 exports.postingTopics = newTopic => connection
@@ -11,10 +10,20 @@ exports.postingTopics = newTopic => connection
   .into('topics')
   .returning('*');
 
-exports.fetchArticlesByTopic = () => connection
+exports.fetchArticlesByTopic = (
+  chooseTopic,
+  maxResults = 10,
+  sorted_By = 'created_at',
+  order = 'DESC',
+  refPage = 1,
+) => connection
   .select('articles.*')
-  .count('comments.comments_id AS comment_count')
-  .from('articles')
+  .count('comments.comments_id AS Comment_count')
   .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
+  .from('articles')
   .groupBy('articles.article_id')
-  .returning('*');
+  .where({ topic: chooseTopic })
+  .returning('*')
+  .limit(maxResults)
+  .orderBy(sorted_By, order)
+  .offset((refPage - 1) * maxResults);

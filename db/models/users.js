@@ -8,4 +8,4 @@ exports.fetchUsername = () => connection.returning('*');
 
 exports.fetchArticlesByUsername = () => connection.returning('*');
 
-exports.countArticlesByUsername = () => connection.returning('*');
+exports.countArticlesByUsername = () => connection.returning('*');,

@@ -1,4 +1,10 @@
-const { fetchTopics, postingTopics, fetchArticlesByTopic } = require('../db/models/topics');
+const {
+  fetchTopics,
+  postingTopics,
+  fetchArticlesByTopic,
+  countArticlesByTopic,
+  postingArticles,
+} = require('../db/models/topics');
 
 exports.getTopics = (req, res, next) => {
   fetchTopics()
@@ -22,14 +28,34 @@ exports.addTopics = (req, res, next) => {
 
 exports.getArticlesByTopic = (req, res, next) => {
   const chooseTopic = req.params.topic;
-  const maxResults = req.query.limit;
-  const sort_by = req.query.sort_by;
-  const order = req.query.order;
-  const pageRef = req.query.p;
+  const {
+    sort_by, order, p: pageRef, limit: maxResults,
+  } = req.query;
 
-  fetchArticlesByTopic(chooseTopic, maxResults, sort_by, order, pageRef)
-    .then((articles) => {
-      res.status(200).send({ articles });
+  Promise.all([
+    fetchArticlesByTopic(chooseTopic, maxResults, sort_by, order, pageRef),
+    countArticlesByTopic(chooseTopic),
+  ])
+    .then(([articles, total_count]) => {
+      res.status(200).send({ articles, total_count });
     })
     .catch(err => next(err));
+};
+
+exports.addArticle = (req, res, next) => {
+  const { title, body, author } = req.body;
+  const { topic } = req.params;
+  // console.log('I am here');
+  const newArticle = {
+    title,
+    body,
+    author,
+    topic,
+  };
+  // console.log(req.body);
+  postingArticles(newArticle)
+    .then(([article]) => {
+      res.status(201).json({ article });
+    })
+    .catch(err => console.log(err) || next(err));
 };

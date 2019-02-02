@@ -27,3 +27,14 @@ exports.fetchArticlesByTopic = (
   .limit(maxResults)
   .orderBy(sorted_By, order)
   .offset((refPage - 1) * maxResults);
+
+exports.countArticlesByTopic = chooseTopic => connection
+  .count('articles.title as total_count')
+  .from('articles')
+  .where({ topic: chooseTopic })
+  .returning('*');
+
+exports.postingArticles = newArticle => connection
+  .insert(newArticle)
+  .into('articles')
+  .returning('*');

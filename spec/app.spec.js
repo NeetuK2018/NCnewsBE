@@ -18,7 +18,6 @@ describe('/api', () => {
       .get('/api/*')
       .expect(404)
       .then(({ body }) => {
-        // console.log('hiyaxx', { body });
         expect(body).to.be.an('object');
         expect(body.message).to.equal('page not found');
       }));
@@ -28,7 +27,6 @@ describe('/api', () => {
       .get('/api/topics')
       .expect(200)
       .then(({ body }) => {
-        // console.log({ body });
         expect(body.topics).to.be.an('array');
         expect(body.topics[0]).to.contains.keys('slug', 'description');
       }));
@@ -47,7 +45,6 @@ describe('/api', () => {
       })
       .expect(201)
       .then(({ body }) => {
-        // console.log('hiya', { body });
         expect(body.topic).to.be.an('object');
         expect(body.topic).to.contains.keys('slug', 'description');
         expect(body.topic.slug).to.equal('Netflix');
@@ -59,7 +56,6 @@ describe('/api', () => {
       })
       .expect(400)
       .then(({ body }) => {
-        // console.log(body.code);
         expect(body.message).to.equal('invalid input, column does not exist');
       }));
   });
@@ -68,7 +64,6 @@ describe('/api', () => {
       .get('/api/topics/mitch/articles')
       .expect(200)
       .then(({ body }) => {
-        // console.log('articles', body.articles[0]);
         expect(body.articles).to.be.an('array');
         expect(body.articles[0].topic).to.equal('mitch');
       }));
@@ -77,14 +72,12 @@ describe('/api', () => {
       .expect(200)
 
       .then(({ body }) => {
-        // console.log('articles', body.article[0]);
         expect(body.articles[0].author).to.equal('butter_bridge');
       }));
     it('GET status: 200 each article has all correct columns', () => request
       .get('/api/topics/mitch/articles')
       .expect(200)
       .then(({ body }) => {
-        // console.log('articles!!!!!', body.articles[0]);
         expect(body.articles[0]).to.contain.keys(
           'article_id',
           'title',
@@ -124,7 +117,6 @@ describe('/api', () => {
       .get('/api/topics/mitch/articles?p=1')
       .expect(200)
       .then(({ body }) => {
-        // console.log('pages', body.articles);
         expect(body.articles).to.have.length(10);
       }));
     it('GET status:200 responds with p at 2 with limit of 10', () => request
@@ -137,7 +129,6 @@ describe('/api', () => {
       .get('/api/topics/mitch/articles')
       .expect(200)
       .then(({ body }) => {
-        // console.log('pages', body.total_count);
         expect(body.total_count[0].total_count).to.have.equal('11');
       }));
     it('POST status: 201 it inserts a new article into article table', () => request
@@ -149,7 +140,6 @@ describe('/api', () => {
       })
       .expect(201)
       .then(({ body }) => {
-        // console.log('hiya', body);
         expect(body.article).to.be.an('object');
         expect(body.article).to.contains.keys(
           'article_id',
@@ -174,7 +164,6 @@ describe('/api', () => {
         .get('/api/articles?limit=15')
         .expect(200)
         .then(({ body }) => {
-          // console.log('articles!!!!!', body.articles);
           expect(body.articles).to.have.length(12);
         }));
       it('GET status: 200 each article has all correct columns', () => request
@@ -220,14 +209,12 @@ describe('/api', () => {
         .get('/api/articles?p=1')
         .expect(200)
         .then(({ body }) => {
-          // console.log('pages', body.articles);
           expect(body.articles).to.have.length(10);
         }));
       it('GET status:200 responds with p at 2 with limit of 10', () => request
         .get('/api/articles?p=2')
         .expect(200)
         .then(({ body }) => {
-          // console.log(body.articles);
           expect(body.articles).to.have.length(2);
         }));
       describe('/articles/:article_id', () => {
@@ -235,7 +222,6 @@ describe('/api', () => {
           .get('/api/articles/1')
           .expect(200)
           .then(({ body }) => {
-            // console.log('hiyia', body.article);
             expect(body.article).to.be.an('object');
             expect(body.article).to.contains.keys(
               'article_id',
@@ -253,7 +239,6 @@ describe('/api', () => {
           .send({ inc_votes: 1 })
           .expect(200)
           .then(({ body }) => {
-            // console.log(body.article);
             expect(body.article.votes).to.equal(101);
           }));
         it('PATCH status: 200 can change the votes property', () => request
@@ -261,7 +246,6 @@ describe('/api', () => {
           .send({ inc_votes: -2 })
           .expect(200)
           .then(({ body }) => {
-            // console.log(body.article);
             expect(body.article.votes).to.equal(98);
           }));
         xit('PATCH status: 400 when an integer is not passed', () => request
@@ -272,12 +256,60 @@ describe('/api', () => {
             console.log('HELOOOO', body);
             expect(body.message).to.equal('votes must be a number!');
           }));
-        it('GET status:200 responds with an array of comments for given article id', () => request
+        xit('GET status:200 responds with an array of comments for given article id', () => request
           .get('/api/articles/5/comments')
           .expect(200)
           .then(({ body }) => {
             console.log('commenting', body);
             expect(body.articles).to.have.length(2);
+          }));
+      });
+      describe('api/users', () => {
+        it('GET status:200 responds with an array of users objects', () => request
+          .get('/api/users')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.users).to.be.an('array');
+            expect(body.users[0]).to.contains.keys('username', 'name', 'avatar_url');
+          }));
+        it('GET status: 200 responds with the correct number of users', () => request
+          .get('/api/users')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.users).to.have.length(3);
+          }));
+        it('POST status: 201 it inserts a new user into users table', () => request
+          .post('/api/users')
+          .send({
+            username: 'neetgurl',
+            name: 'neetu',
+            avatar_url:
+                'https://www.codingWitch.com/wp-content/uploads/2019/01/recurssionPotion.jpg',
+          })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.user).to.be.an('object');
+            expect(body.user).to.contains.keys('username', 'username', 'avatar_url');
+            expect(body.user.name).to.equal('neetu');
+          }));
+      });
+      describe('/users/:username', () => {
+        it('GET status:200 responds with an user object', () => request
+          .get('/api/users/icellusedkars')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.users).to.be.an('object');
+            expect(body.users.username).to.equal('icellusedkars');
+            expect(body.users).to.contains.keys('name', 'username', 'avatar_url');
+          }));
+      });
+      describe('/users/:username/articles', () => {
+        it('GET status: 200 responds with an articles array of article objects created by the given user', () => request
+          .get('/api/users/icellusedkars/articles')
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body);
+            expect(body.articles).to.have.length(10);
           }));
       });
     });

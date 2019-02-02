@@ -1,11 +1,21 @@
 const connection = require('../connection');
 
-exports.fetchUsers = () => connection.returning('*');
+exports.fetchUsers = () => connection
+  .select('*')
+  .from('users')
+  .returning('*');
 
-exports.updateUsers = () => connection.returning('*');
+exports.updateUsers = newUser => connection
+  .insert(newUser)
+  .into('users')
+  .returning('*');
 
-exports.fetchUsername = () => connection.returning('*');
+exports.fetchUsername = username => connection
+  .select('users.*')
+  .from('users')
+  .where({ 'users.username': username })
+  .returning('*');
 
-exports.fetchArticlesByUsername = () => connection.returning('*');
+// exports.fetchArticlesByUsername = () => connection.returning('*');
 
-exports.countArticlesByUsername = () => connection.returning('*');,
+// exports.countArticlesByUsername = () => connection.returning('*');

@@ -21,7 +21,7 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticlesByArticleID = (req, res, next) => {
   const { article_id } = req.params;
-  // console.log('neetu', article_id);
+
   fetchArticlesByArticleID(article_id)
     .then(([article]) => {
       res.status(200).send({ article });

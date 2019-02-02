@@ -1,7 +1,7 @@
 \c nc_news_test;
 
 
--- SELECT * FROM articles;
+SELECT * FROM articles;
 
 -- SELECT articles.*, COUNT(comments.comments_id) 
 -- AS Comment_count FROM articles
@@ -31,9 +31,9 @@
 -- WHERE topic = 'mitch';
 
 
-SELECT * from comments 
-left JOIN  articles ON articles.article_id = comments.article_id
-WHERE articles.article_id = 2;
+-- SELECT * from comments 
+-- left JOIN  articles ON articles.article_id = comments.article_id
+-- WHERE articles.article_id = 2;
 
 
 
@@ -43,3 +43,5 @@ WHERE articles.article_id = 2;
 -- on articles.article_id = comments.article_id
 -- WHERE articles.article_id = 5
 -- GROUP BY articles.article_id;
+
+SELECT users.* FROM users;

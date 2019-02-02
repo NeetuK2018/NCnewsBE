@@ -7,15 +7,30 @@ const {
 } = require('../db/models/users');
 
 exports.getUsers = (req, res, next) => {
-  fetchUsers();
+  fetchUsers()
+    .then((users) => {
+      res.status(200).send({ users });
+    })
+    .catch(err => next(err));
 };
 
-exports.addUsers = (req, res, next) => {
-  updateUsers();
+exports.addUser = (req, res, next) => {
+  const newUser = req.body;
+  updateUsers(newUser)
+    .then(([user]) => {
+      res.status(201).json({ user });
+    })
+    .catch(err => console.log(err) || next(err));
 };
 
 exports.getUserByUsername = (req, res, next) => {
-  fetchUsername();
+  const { username } = req.params;
+
+  fetchUsername(username)
+    .then(([users]) => {
+      res.status(200).send({ users });
+    })
+    .catch(err => next(err));
 };
 
 exports.getArticlesByUsername = (req, res, next) => {

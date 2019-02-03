@@ -385,7 +385,7 @@ describe('/api', () => {
         expect(body.users).to.contains.keys('name', 'username', 'avatar_url');
       }));
   });
-  describe.only('/users/:username/articles', () => {
+  describe('/users/:username/articles', () => {
     it('GET status: 200 returns an array of article objects by the given user', () => request
       .get('/api/users/icellusedkars/articles')
       .expect(200)
@@ -400,6 +400,42 @@ describe('/api', () => {
           'created_at',
           'topic',
         );
+      }));
+    it('GET status: 200 each articles responds with a limit of 10 results DEFAULT CASE', () => request
+      .get('/api/users/icellusedkars/articles')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).to.have.length(6);
+      }));
+    it('GET status: 200 each username responds with a limit of 6 results when ', () => request
+      .get('/api/users/icellusedkars/articles?limit=5')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).to.have.length(5);
+      }));
+    it('GET status: 200 articles sorted by date DEFAULT CASE', () => request
+      .get('/api/users/icellusedkars/articles?sorted_by')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles[0].title).to.equal('Sony Vaio; or, The Laptop');
+      }));
+    it('GET status: 200 responds sorted by comment_count DEFAULT CASE', () => request
+      .get('/api/users/icellusedkars/articles?sorted_by=comment_count')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles[0].comment_count).to.equal('0');
+      }));
+    it('GET status:200 responds with p at 1 with limit of 10 DEFAULT CASE', () => request
+      .get('/api/users/icellusedkars/articles?p=1')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).to.have.length(6);
+      }));
+    it('GET status:200 responds with p at 2 with limit of 10', () => request
+      .get('/api/users/icellusedkars/articles?p=2')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).to.have.length(0);
       }));
   });
 });

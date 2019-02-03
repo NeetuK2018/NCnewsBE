@@ -37,7 +37,7 @@
 -- FROM articles
 -- WHERE topic = 'mitch';
 -- select * from comments where article_id = 1;
-SELECT * FROM articles;
+-- SELECT * FROM articles;
 
 SELECT comments.*  FROM comments  where article_id = 1;
 -- JOIN articles ON comments.article_id = articles.article_id

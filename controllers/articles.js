@@ -6,6 +6,8 @@ const {
   fetchCommentsByArticle_id,
   removeArticle,
   addComment,
+  changingVote,
+  removeComment,
 } = require('../db/models/articles');
 
 exports.getArticles = (req, res, next) => {
@@ -80,5 +82,25 @@ exports.addCommentByArticle_id = (req, res, next) => {
     .then(([comment]) => {
       res.status(201).json({ comment });
     })
-    .catch(err => console.log(err) || next(err));
+    .catch(err => next(err));
+};
+
+exports.updateCommentVote = (req, res, next) => {
+  const { inc_votes } = req.body;
+  const { article_id, comments_id } = req.params;
+  changingVote(inc_votes, article_id, comments_id)
+    .then(([comment]) => {
+      res.status(201).json({ comment });
+    })
+    .catch(err => next(err));
+};
+exports.deleteComment = (req, res, next) => {
+  const { article_id, comments_id } = req.params;
+
+  removeComment(article_id, comments_id)
+    .then((response) => {
+      if (response === 0) next({ status: 404, message: 'no comments found to delete' });
+      else res.status(204).send({ message: 'delete successful' });
+    })
+    .catch(next);
 };

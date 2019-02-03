@@ -5,7 +5,7 @@ const {
   getUsers,
   addUser,
   getUserByUsername,
-  getArticlesByUsername,
+  getArticlesbyUsername,
 } = require('../controllers/users');
 
 usersRouter
@@ -15,6 +15,6 @@ usersRouter
 
 usersRouter.route('/:username').get(getUserByUsername);
 
-// usersRouter.route('/:username/articles').get(getArticlesByUsername);
+usersRouter.route('/:username/articles').get(getArticlesbyUsername);
 
 module.exports = usersRouter;

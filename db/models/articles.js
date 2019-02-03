@@ -53,3 +53,16 @@ exports.addComment = newComment => connection
   .insert(newComment)
   .into('comments')
   .returning('*');
+
+exports.changingVote = (inc_votes, article_id, comments_id) => connection
+  .select('*')
+  .from('comments')
+  .where('comments.article_id', '=', article_id)
+  .where('comments.comment_id', '=', comments_id)
+  .increment('votes', inc_votes)
+  .returning('*');
+
+exports.removeComment = (article_id, comments_id) => connection('articles')
+  .where({ 'articles.id': article_id })
+  .where({ 'articles.comments_id': comments_id })
+  .del();

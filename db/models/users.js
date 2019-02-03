@@ -16,23 +16,6 @@ exports.fetchUsername = username => connection
   .where({ 'users.username': username })
   .returning('*');
 
-exports.fetchArticlesByUsername = (
-  username,
-  maxResults = 10,
-  sorted_By = 'created_at',
-  order = 'DESC',
-  p = 1,
-) => connection
-  .select('articles.*')
-  .count('comments.article_id AS Comment_count')
-  .from('articles')
-  .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
-  .where('articles.author', '=', username)
-  .groupBy('articles.author', 'articles.title', 'articles.article_id')
-  .offset((p - 1) * maxResults)
-  .orderBy(sorted_By, order)
-  .limit(maxResults);
-
 exports.countArticlesByUsername = ({ username }) => connection
   .select('username')
   .count({ total_count: 'username' })
@@ -40,3 +23,27 @@ exports.countArticlesByUsername = ({ username }) => connection
   .leftJoin('users', 'users.username', '=', 'articles.author')
   .groupBy('username')
   .where('articles.author', '=', username);
+
+exports.fetchArticlesByUsername = (
+  username,
+  limit = 10,
+  sort_by = 'created_at',
+  p = 1,
+  order = 'DESC',
+) => connection
+  .select(
+    'articles.author',
+    'articles.title',
+    'articles.article_id',
+    'articles.votes',
+    'articles.created_at',
+    'articles.topic',
+  )
+  .count('comments.article_id AS comment_count')
+  .from('articles')
+  .leftJoin('comments', 'articles.article_id', 'comments.article_id')
+  .where('articles.author', '=', username)
+  .groupBy('articles.author', 'articles.title', 'articles.article_id')
+  .offset((p - 1) * limit)
+  .orderBy(sort_by, order)
+  .limit(limit);

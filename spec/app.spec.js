@@ -333,9 +333,20 @@ describe('/api', () => {
     .expect(201)
     .send({ username: 'icellusedkars', body: 'worst thing about buying online is having to get up and find your debit card' })
     .then(({ body }) => {
+      console.log('mineUPDATE', body.comment.votes);
       expect(body.comment.body).to.equal('worst thing about buying online is having to get up and find your debit card' );
     }));
-
+  it('PATCH status: 200 can change the votes property', () => request
+    .patch('/api/articles/1/comments/12')
+    .send({ inc_votes: 1 })
+    .expect(200)
+    .then(({ body }) => {
+      console.log(body)
+      expect(body).to.equal(101);
+    }));
+  it('DElETE status: 204 removes an comments by article_id', () => request
+    .delete('/api/articles/1/commennts/5')
+    .expect(204));
   describe('api/users', () => {
     it('GET status:200 responds with an array of users objects', () => request
       .get('/api/users')
@@ -374,12 +385,11 @@ describe('/api', () => {
         expect(body.users).to.contains.keys('name', 'username', 'avatar_url');
       }));
   });
-  describe('/users/:username/articles', () => {
+  describe.only('/users/:username/articles', () => {
     it('GET status: 200 returns an array of article objects by the given user', () => request
       .get('/api/users/icellusedkars/articles')
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
         expect(body.articles).to.be.an('array');
         expect(body.articles[0]).to.contains.keys(
           'author',

@@ -16,6 +16,27 @@ exports.fetchUsername = username => connection
   .where({ 'users.username': username })
   .returning('*');
 
-// exports.fetchArticlesByUsername = () => connection.returning('*');
+exports.fetchArticlesByUsername = (
+  username,
+  maxResults = 10,
+  sorted_By = 'created_at',
+  order = 'DESC',
+  p = 1,
+) => connection
+  .select('articles.*')
+  .count('comments.article_id AS Comment_count')
+  .from('articles')
+  .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
+  .where('articles.author', '=', username)
+  .groupBy('articles.author', 'articles.title', 'articles.article_id')
+  .offset((p - 1) * maxResults)
+  .orderBy(sorted_By, order)
+  .limit(maxResults);
 
-// exports.countArticlesByUsername = () => connection.returning('*');
+exports.countArticlesByUsername = ({ username }) => connection
+  .select('username')
+  .count({ total_count: 'username' })
+  .from('articles')
+  .leftJoin('users', 'users.username', '=', 'articles.author')
+  .groupBy('username')
+  .where('articles.author', '=', username);

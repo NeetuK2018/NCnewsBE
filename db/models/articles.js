@@ -30,18 +30,26 @@ exports.countArticles = () => connection
   .from('articles')
   .returning('*');
 
+exports.removeArticle = article_id => connection('articles')
+  .where({ 'articles.article_id': article_id })
+  .del();
+
 exports.fetchCommentsByArticle_id = (
   article_id,
-  maxResults = 10,
-  sorted_By = 'created_at',
+  limit = 10,
+  sort_by = 'created_at',
   order = 'DESC',
-  refPage = 1,
+  p = 1,
 ) => connection
-  .select('comments.*')
-  .leftJoin('articles', 'articles.article_id', '=', 'comments.article_id')
+  .select('*')
   .from('comments')
   .where({ article_id })
   .returning('*')
-  .limit(maxResults)
-  .orderBy(sorted_By, order)
-  .offset((refPage - 1) * maxResults);
+  .offset((p - 1) * limit)
+  .orderBy(sort_by, order)
+  .limit(limit);
+
+exports.addComment = newComment => connection
+  .insert(newComment)
+  .into('comments')
+  .returning('*');

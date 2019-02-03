@@ -248,70 +248,148 @@ describe('/api', () => {
           .then(({ body }) => {
             expect(body.article.votes).to.equal(98);
           }));
-        xit('PATCH status: 400 when an integer is not passed', () => request
+        it('PATCH status: 400 when an integer is not passed', () => request
           .patch('/api/articles/1')
           .send({ inc_votes: 'bbbb' })
           .expect(400)
           .then(({ body }) => {
-            console.log('HELOOOO', body);
             expect(body.message).to.equal('votes must be a number!');
           }));
-        xit('GET status:200 responds with an array of comments for given article id', () => request
-          .get('/api/articles/5/comments')
+        it('DElETE status: 204 removes an articles by id', () => request.delete('/api/articles/7').expect(204));
+        it('GET status:200 responds with an array of comments for given article id', () => request
+          .get('/api/articles/1/comments')
           .expect(200)
           .then(({ body }) => {
-            console.log('commenting', body);
-            expect(body.articles).to.have.length(2);
+            expect(body.comments).to.be.an('array');
+            expect(body.comments[0]).to.contains.keys(
+              'comments_id',
+              'username',
+              'article_id',
+              'votes',
+              'created_at',
+              'body',
+            );
+          }));
+        it('GET status: 200 each responds with a limit of 10 results DEFAULT CASE', () => request
+          .get('/api/articles/1/comments')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments).to.have.length(10);
           }));
       });
-      describe('api/users', () => {
-        it('GET status:200 responds with an array of users objects', () => request
-          .get('/api/users')
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.users).to.be.an('array');
-            expect(body.users[0]).to.contains.keys('username', 'name', 'avatar_url');
-          }));
-        it('GET status: 200 responds with the correct number of users', () => request
-          .get('/api/users')
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.users).to.have.length(3);
-          }));
-        it('POST status: 201 it inserts a new user into users table', () => request
-          .post('/api/users')
-          .send({
-            username: 'neetgurl',
-            name: 'neetu',
-            avatar_url:
-                'https://www.codingWitch.com/wp-content/uploads/2019/01/recurssionPotion.jpg',
-          })
-          .expect(201)
-          .then(({ body }) => {
-            expect(body.user).to.be.an('object');
-            expect(body.user).to.contains.keys('username', 'username', 'avatar_url');
-            expect(body.user.name).to.equal('neetu');
-          }));
-      });
-      describe('/users/:username', () => {
-        it('GET status:200 responds with an user object', () => request
-          .get('/api/users/icellusedkars')
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.users).to.be.an('object');
-            expect(body.users.username).to.equal('icellusedkars');
-            expect(body.users).to.contains.keys('name', 'username', 'avatar_url');
-          }));
-      });
-      describe('/users/:username/articles', () => {
-        it('GET status: 200 responds with an articles array of article objects created by the given user', () => request
-          .get('/api/users/icellusedkars/articles')
-          .expect(200)
-          .then(({ body }) => {
-            console.log(body);
-            expect(body.articles).to.have.length(10);
-          }));
-      });
+      it('GET status: 200 takes a limit query to change the number of comments', () => request
+        .get('/api/articles/1/comments?limit=4')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments).to.have.length(4);
+        }));
     });
+    it('GET status: 200 responds with sorted by date DEFAULT CASE', () => request
+      .get('/api/articles/1/comments?sorted_by')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments[0].created_at).to.equal('2016-11-22T12:36:03.389Z');
+      }));
+  });
+  it('GET status: 200 responds with sorted by comments_id', () => request
+    .get('/api/articles/1/comments?sorted_By=comments_id')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.comments[0].comments_id).to.equal(2);
+    }));
+  it('GET status:200 responds with p at 1 with limit of 10 DEFAULT CASE', () => request
+    .get('/api/articles/1/comments')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.comments).to.have.length(10);
+    }));
+  it('GET status:200 responds with p at 2 with limit of 15', () => request
+    .get('/api/articles/1/comments?p=2&limit=15')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.comments).to.have.length(13);
+    }));
+  it('GET status:200 respond order is descending DEFAULT CASE', () => request
+    .get('/api/articles/1/comments')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.comments[0].username).to.equal('butter_bridge');
+    }));
+  it('GET status:200 respond order is ascending', () => request
+    .get('/api/articles/1/comments?sort_by=comments.comments_id&order=asc')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.comments[0].username).to.equal('butter_bridge');
+    }));
+  it('POST status:201 adding a comment by article_id', () => request
+    .post('/api/articles/1/comments')
+    .expect(201)
+    .send({ username: 'icellusedkars', body: 'worst thing about buying online is having to get up and find your debit card' })
+    .then(({ body }) => {
+      expect(body.comment.body).to.equal('worst thing about buying online is having to get up and find your debit card' );
+    }));
+  it('POST status:201 adding a comment by article_id', () => request
+    .post('/api/articles/1/comments')
+    .expect(201)
+    .send({ username: 'icellusedkars', body: 'worst thing about buying online is having to get up and find your debit card' })
+    .then(({ body }) => {
+      expect(body.comment.body).to.equal('worst thing about buying online is having to get up and find your debit card' );
+    }));
+
+  describe('api/users', () => {
+    it('GET status:200 responds with an array of users objects', () => request
+      .get('/api/users')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).to.be.an('array');
+        expect(body.users[0]).to.contains.keys('username', 'name', 'avatar_url');
+      }));
+    it('GET status: 200 responds with the correct number of users', () => request
+      .get('/api/users')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).to.have.length(3);
+      }));
+    it('POST status: 201 it inserts a new user into users table', () => request
+      .post('/api/users')
+      .send({
+        username: 'neetgurl',
+        name: 'neetu',
+        avatar_url: 'https://www.codingWitch.com/wp-content/uploads/2019/01/recurssionPotion.jpg',
+      })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.user).to.be.an('object');
+        expect(body.user).to.contains.keys('username', 'username', 'avatar_url');
+        expect(body.user.name).to.equal('neetu');
+      }));
+  });
+  describe('/users/:username', () => {
+    it('GET status:200 responds with an user object', () => request
+      .get('/api/users/icellusedkars')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).to.be.an('object');
+        expect(body.users.username).to.equal('icellusedkars');
+        expect(body.users).to.contains.keys('name', 'username', 'avatar_url');
+      }));
+  });
+  describe('/users/:username/articles', () => {
+    it('GET status: 200 returns an array of article objects by the given user', () => request
+      .get('/api/users/icellusedkars/articles')
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body);
+        expect(body.articles).to.be.an('array');
+        expect(body.articles[0]).to.contains.keys(
+          'author',
+          'title',
+          'article_id',
+          'votes',
+          'comment_count',
+          'created_at',
+          'topic',
+        );
+      }));
   });
 });

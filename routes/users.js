@@ -15,6 +15,6 @@ usersRouter
 
 usersRouter.route('/:username').get(getUserByUsername);
 
-usersRouter.route('/:username/articles').get(getArticlesByUsername);
+// usersRouter.route('/:username/articles').get(getArticlesByUsername);
 
 module.exports = usersRouter;

@@ -33,7 +33,17 @@ exports.getUserByUsername = (req, res, next) => {
     .catch(err => next(err));
 };
 
-exports.getArticlesByUsername = (req, res, next) => {
-  fetchArticlesByUsername();
-  countArticlesByUsername();
+exports.getArticlesbyUsername = (req, res, next) => {
+  const { username } = req.params;
+  const {
+    limit, sort_by, p, order,
+  } = req.query;
+
+  fetchArticlesByUsername(username, limit, sort_by, p, order)
+    .then(articles => Promise.all([countArticlesByUsername(req.params), articles]))
+    .then(([total_count, articles]) => {
+      if (total_count.length === 0) return Promise.reject({ status: 404, message: 'sorry not found' });
+      return res.status(200).send({ total_count, articles });
+    })
+    .catch(next);
 };

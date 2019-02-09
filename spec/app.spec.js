@@ -421,6 +421,10 @@ describe('/api', () => {
     .then(({ body }) => {
       expect(body.comment.votes).to.equal(-2); // working
     }));
+  it('PATCH status: 400 when an integer is not passed', () => request
+    .patch('/api/articles/1/comments/12')
+    .send({ inc_votes: 'bbbb' })
+    .expect(400));
   it('DElETE status: 204 removes comment by article_id', () => request.delete('/api/articles/1/comments/5').expect(204));
   it('DElETE status: 404 trying to removes comment by non existent article_id', () => request.delete('/api/articles/1000/comments/5').expect(404));
   it('DElETE status: 400 trying to removes comment by invalid article_id', () => request.delete('/api/articles/bbb/comments/5').expect(400));
@@ -465,6 +469,11 @@ describe('/api', () => {
     .send({
       username: 'neetgurl',
     }).expect(400));
+  it('POST status: 400 input of incorrect format', () => request
+    .post('/api/users')
+    .send({
+      name: 'neetgurl',
+    }).expect(400));
   describe('/users/:username', () => {
     it('GET status:200 responds with an user object', () => request
       .get('/api/users/icellusedkars')
@@ -496,7 +505,7 @@ describe('/api', () => {
       .get('/api/users/icellusedkars/articles')
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
+        // console.log(body);
         expect(body.total_count).to.have.equal('6');
       }));
     it('GET status:responds 404 for trying to retrieve an array of articles objects for non existent user', () => request.get('/api/users/lisasimpson/articles').expect(404));

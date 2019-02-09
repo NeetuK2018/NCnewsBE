@@ -87,8 +87,8 @@ exports.addCommentByArticle_id = (req, res, next) => {
 exports.updateCommentVote = (req, res, next) => {
   const { inc_votes } = req.body;
   const { article_id, comments_id } = req.params;
-  // if (!parseInt(inc_votes, 10) ===) return next({ status: 400, msg: 'invalid inc_votes' });
 
+  if (Number.isNaN(parseInt(inc_votes, 10))) return next({ status: 400, msg: 'invalid inc_votes' });
   changingVote(article_id, comments_id, inc_votes)
     .then(([comment]) => {
       // console.log('hiyaz', comment);

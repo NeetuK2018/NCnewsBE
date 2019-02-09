@@ -59,5 +59,5 @@ exports.addArticle = (req, res, next) => {
     .then(([article]) => {
       res.status(201).json({ article });
     })
-    .catch(err => console.log('thiskfkutfytfjyt', err) || next(err));
+    .catch(err => next(err));
 };

@@ -4,7 +4,7 @@
     POST status:422 client sends a body with a duplicate slug:
 Error: expected 422 "Unprocessable Entity", got 500 "Internal Server Error"
 
-* Need to add an error code to one of the error handling middleware functions
+* Need to add an error code to one of the error handling middleware functions// done
 
 2) /
 /api
@@ -12,13 +12,13 @@ Error: expected 422 "Unprocessable Entity", got 500 "Internal Server Error"
     POST status:400 if request body is malformed (missing description property):
 Error: expected 400 "Bad Request", got 500 "Internal Server Error"
 
-* Need error code for the POST body when it is missing a description!
+* Need error code for the POST body when it is missing a description!// done
 
 3) /
 /api
   /topics
     status:405 invalid HTTP method for this resource:
-Error: expected 405 "Method Not Allowed", got 404 "Not Found"
+Error: expected 405 "Method Not Allowed", got 404 "Not Found"//done
 
 ```js
 request
@@ -35,7 +35,7 @@ request
 AssertionError: expected [ { total_count: '11' } ] to equal '11'
 
 * Pull off the total_count property for articles in both your getArticlesByTopic and getArticles controllers
-
+//done
 7) /
 /api
   /topics/:topic/articles
@@ -52,7 +52,7 @@ Error: expected 200 "OK", got 400 "Bad Request"
       all article objects have a comment_count property:
 AssertionError: expected undefined to equal '13'
 
-* Using Comment_count -> change to lowercase!
+* Using Comment_count -> change to lowercase! //done
 
 9) /
 /api
@@ -62,7 +62,7 @@ AssertionError: expected undefined to equal '13'
 Error: expected 404 "Not Found", got 200 "OK"
 
 * If you do a request with a non-existent topic knex DOES NOT error out!
-Check array length of articles and if empty then reject with status 404!
+Check array length of articles and if empty then reject with status 404! // done
 
 10) /
 /api
@@ -71,14 +71,14 @@ Check array length of articles and if empty then reject with status 404!
       POST status:404 adding an article to a non-existent topic:
 Error: expected 404 "Not Found", got 500 "Internal Server Error"
 
-* Try to POST an article with a non-existent topic then you will get an error from knex
+* Try to POST an article with a non-existent topic then you will get an error from knex//done
 
 11) /
 /api
   /topics/:topic/articles
     ERRORS
       invalid methods respond with 405:
-Error: expected 405 "Method Not Allowed", got 404 "Not Found"
+Error: expected 405 "Method Not Allowed", got 404 "Not Found"//done
 
 * Dont worry about this !
 
@@ -90,6 +90,7 @@ Error: expected 405 "Method Not Allowed", got 404 "Not Found"
 Error: expected 400 "Bad Request", got 500 "Internal Server Error"
 
 * Write a test without a body and without a username -> use the error code in your POSTing article!
+//done
 
 13) /
 /api
@@ -98,6 +99,7 @@ Error: expected 400 "Bad Request", got 500 "Internal Server Error"
 Error: expected 405 "Method Not Allowed", got 404 "Not Found"
 
 * Ignore for time being!
+//done
 
 14) /
 /api
@@ -107,7 +109,7 @@ Error: expected 405 "Method Not Allowed", got 404 "Not Found"
 Error: expected 200 "OK", got 400 "Bad Request"
 
 * Check to see if sort_by is on the articles table! e.g. is it votes, article_id etc...
-
+//done
 
 15) /
 /api
@@ -117,6 +119,7 @@ Error: expected 200 "OK", got 400 "Bad Request"
 AssertionError: expected undefined to equal '13'
 
 * Use comment_count not Comment_count !
+//done
 
 17) /
 /api
@@ -125,6 +128,7 @@ AssertionError: expected undefined to equal '13'
 Error: expected 404 "Not Found", got 200 "OK"
 
 * Check to see if articles length is zero and then reject with status 404!
+//done
 
 18) /
 /api
@@ -134,6 +138,7 @@ Error: expected 400 "Bad Request", got 500 "Internal Server Error"
 
 
 * Need to add code to the relevant error handler!
+//done
 
 19) /
 /api
@@ -142,6 +147,7 @@ Error: expected 400 "Bad Request", got 500 "Internal Server Error"
 Error: expected 400 "Bad Request", got 404 "Not Found"
 
 * Check to see if `inc_votes` is not a number and if so call next with 400 object
+//done
 
 20) /
 /api
@@ -150,6 +156,7 @@ Error: expected 400 "Bad Request", got 404 "Not Found"
 Error: expected 200 "OK", got 404 "Not Found"
 
 * Don't worry about this problem!
+//done
 
 22) /
 /api
@@ -159,7 +166,7 @@ Error: expected 400 "Bad Request", got 500 "Internal Server Error"
 
 * Need to invalid article_id with a code in the error handler!
 
-
+//done
 24) /
 /api
   /api/articles/:article_id/comments
@@ -174,6 +181,7 @@ AssertionError: expected 'The beautiful thing about treasure is that it exists. 
 +This morning, I showered for nine minutes.
 
 * Swap parameter order in the fetchCommentsByArticleID controller!
+//done
 
 25) /
 /api
@@ -183,6 +191,7 @@ Error: expected 200 "OK", got 400 "Bad Request"
 
 * So change status code to 200 and make sure you are doing comments.comments_id -> 
 ideally you should have comments.comment_id!
+//done
 
 
 27) /
@@ -193,6 +202,7 @@ Error: expected 404 "Not Found", got 400 "Bad Request"
 
 
 * Need to error handle for this when a non-existent article_id is not used!s
+//done
 
 28) /
 /api
@@ -202,7 +212,7 @@ Error: expected 404 "Not Found", got 400 "Bad Request"
 
 * Error handle when using a non-existent comment_id!
 
-
+//done
 29) /
 /api
   /articles/:article_id/comments/:comment_id
@@ -210,7 +220,7 @@ Error: expected 404 "Not Found", got 400 "Bad Request"
 Error: expected 204 "No Content", got 400 "Bad Request"
 
 * Double check the columns are referencing the column table when you are deleting a comment!
-
+//done
 30) /
 /api
   /articles/:article_id/comments/:comment_id
@@ -218,7 +228,7 @@ Error: expected 204 "No Content", got 400 "Bad Request"
 Error: expected 404 "Not Found", got 400 "Bad Request"
 
 * Need to error-handler for this case similar to the DELETing of articles!
-
+//done
 31) /
 /api
   /articles/:article_id/comments/:comment_id
@@ -227,7 +237,7 @@ Error: expected 404 "Not Found", got 400 "Bad Request"
 
 * Handle the non-existent comment_id!
 
-
+//done
 34) /
 /users/:username
   GET status:200 responds with a user object when given a valid username:
@@ -235,13 +245,13 @@ AssertionError: expected undefined to deeply equal { Object (username, name, ...
 at request.get.expect.then (spec/nc.spec.js:678:32)
 
 res.status(200).send({user}) //<-- singular here!!!
-
+//done
 35) /
 /users/:username
   GET status:404 when a non-existent username:
 Error: expected 404 "Not Found", got 200 "OK"
 
 * Handle the non-existent username
-
+//done
 
 

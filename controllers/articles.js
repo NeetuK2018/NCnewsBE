@@ -17,9 +17,9 @@ exports.getArticles = (req, res, next) => {
 
   Promise.all([fetchArticles(maxResults, sort_by, order, pageRef), countArticles()])
     .then(([articles, total_count]) => {
-      if (!articles) return Promise.reject({ status: 404, message: 'articles not found' });
+      if (articles.length === 0) return Promise.reject({ status: 404, message: 'articles not found' });
 
-      res.status(200).send({ articles, total_count });
+      res.status(200).send({ articles, total_count: total_count[0].total_count });
     })
     .catch(err => next(err));
 };
@@ -29,25 +29,23 @@ exports.getArticlesByArticleID = (req, res, next) => {
 
   fetchArticlesByArticleID(article_id)
     .then(([article]) => {
-      res.status(200).send({ article });
+      if (article) {
+        res.send({ article });
+      } else next({ status: 404, message: 'article_id does not exist' });
     })
-    .catch(err => next(err));
+    .catch(next);
 };
 
 exports.updateVotes = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
 
-  // console.log(/\d/g.test(inc_votes), inc_votes);
-  if (/\d/g.test(inc_votes)) {
-    modifyVotes(article_id, inc_votes)
-      .then(([article]) => {
-        res.status(200).send({ article });
-      })
-      .catch(err => console.log(err) || next(err));
-  } else {
-    next({ status: 404, message: 'vote must be an integer' });
-  }
+  if (Number.isNaN(parseInt(inc_votes, 10))) return next({ status: 400, msg: 'invalid inc_votes' });
+  modifyVotes(article_id, inc_votes)
+    .then(([article]) => {
+      res.status(200).send({ article });
+    })
+    .catch(err => next(err));
 };
 
 exports.getCommentsByArticle_id = (req, res, next) => {
@@ -56,9 +54,10 @@ exports.getCommentsByArticle_id = (req, res, next) => {
   const {
     limit, sort_by, p, order,
   } = req.query;
-
   fetchCommentsByArticle_id(article_id, limit, sort_by, p, order)
     .then((comments) => {
+      if (comments.length === 0) return Promise.reject({ status: 404, message: 'article ID does not exist' });
+
       res.status(200).send({ comments });
     })
     .catch(err => next(err));
@@ -88,18 +87,23 @@ exports.addCommentByArticle_id = (req, res, next) => {
 exports.updateCommentVote = (req, res, next) => {
   const { inc_votes } = req.body;
   const { article_id, comments_id } = req.params;
-  changingVote(inc_votes, article_id, comments_id)
+  // if (!parseInt(inc_votes, 10) ===) return next({ status: 400, msg: 'invalid inc_votes' });
+
+  changingVote(article_id, comments_id, inc_votes)
     .then(([comment]) => {
-      res.status(201).json({ comment });
+      // console.log('hiyaz', comment);
+      res.status(200).json({ comment });
     })
     .catch(err => next(err));
 };
+
 exports.deleteComment = (req, res, next) => {
   const { article_id, comments_id } = req.params;
-
+  // console.log(article_id);
   removeComment(article_id, comments_id)
     .then((response) => {
-      if (response === 0) next({ status: 404, message: 'no comments found to delete' });
+      // console.log('response', response);
+      if (response === 0) next({ status: 404, msg: 'no data for this endpoint...' });
       else res.status(204).send({ message: 'delete successful' });
     })
     .catch(next);

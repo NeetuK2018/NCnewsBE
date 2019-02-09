@@ -20,19 +20,20 @@ exports.addUser = (req, res, next) => {
     .then(([user]) => {
       res.status(201).json({ user });
     })
-    .catch(err => console.log(err) || next(err));
+    .catch(err => next(err)); // .catch(err => console.log(err) || next(err));
 };
 
 exports.getUserByUsername = (req, res, next) => {
   const { username } = req.params;
-
+  // chnaged users to user
   fetchUsername(username)
     .then(([users]) => {
-      res.status(200).send({ users });
+      if (users) {
+        res.send({ users });
+      } else next({ status: 404, message: 'username does not exist' });
     })
-    .catch(err => next(err));
+    .catch(next);
 };
-
 exports.getArticlesbyUsername = (req, res, next) => {
   const { username } = req.params;
   const {
@@ -42,8 +43,8 @@ exports.getArticlesbyUsername = (req, res, next) => {
   fetchArticlesByUsername(username, limit, sort_by, p, order)
     .then(articles => Promise.all([countArticlesByUsername(req.params), articles]))
     .then(([total_count, articles]) => {
-      if (total_count.length === 0) return Promise.reject({ status: 404, message: 'sorry not found' });
-      return res.status(200).send({ total_count, articles });
+      if (total_count.length === 0) return Promise.reject({ status: 404, message: 'user not found' });
+      return res.status(200).send({ total_count: total_count[0].total_count, articles });
     })
     .catch(next);
 };

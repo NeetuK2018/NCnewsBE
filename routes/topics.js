@@ -1,4 +1,5 @@
 const express = require('express');
+const { handle405 } = require('../errors/error');
 
 const topicsRouter = express.Router();
 const {
@@ -8,7 +9,8 @@ const {
 topicsRouter
   .route('/')
   .get(getTopics)
-  .post(addTopics);
+  .post(addTopics)
+  .all(handle405);
 
 topicsRouter
   .route('/:topic/articles')

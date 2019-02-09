@@ -9,10 +9,14 @@ const {
   deleteArticleByArticle_id,
   deleteComment,
 } = require('../controllers/articles');
+const { handle405 } = require('../errors/error');
 
 const articlesRouter = express.Router();
 
-articlesRouter.route('/').get(getArticles);
+articlesRouter
+  .route('/')
+  .get(getArticles)
+  .all(handle405);
 
 articlesRouter
   .route('/:article_id')

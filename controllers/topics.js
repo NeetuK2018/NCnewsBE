@@ -9,7 +9,8 @@ const {
 exports.getTopics = (req, res, next) => {
   fetchTopics()
     .then((topics) => {
-      if (!topics) return Promise.reject({ status: 404, message: 'topics not found' });
+      // console.log(topics);
+      if (topics.length === 0) return Promise.reject({ status: 404, message: 'topics not found' });
 
       res.status(200).send({ topics });
     })
@@ -37,6 +38,7 @@ exports.getArticlesByTopic = (req, res, next) => {
     countArticlesByTopic(chooseTopic),
   ])
     .then(([articles, total_count]) => {
+      if (articles.length === 0) return Promise.reject({ status: 404, message: 'Topic not Found' });
       res.status(200).send({ articles, total_count });
     })
     .catch(err => next(err));
@@ -57,5 +59,5 @@ exports.addArticle = (req, res, next) => {
     .then(([article]) => {
       res.status(201).json({ article });
     })
-    .catch(err => console.log(err) || next(err));
+    .catch(err => console.log('thiskfkutfytfjyt', err) || next(err));
 };

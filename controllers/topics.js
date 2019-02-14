@@ -28,20 +28,27 @@ exports.addTopics = (req, res, next) => {
 };
 
 exports.getArticlesByTopic = (req, res, next) => {
-  const chooseTopic = req.params.topic;
-  const {
-    sort_by, order, p: pageRef, limit: maxResults,
-  } = req.query;
+  const { topic } = req.params;
+
+  const { limit, p, order } = req.query;
+
+  let { sort_by } = req.query;
+
+  const validSorts = ['title', 'article_id', 'votes', 'author', 'created_at', 'topic'];
+
+  if (!validSorts.includes(sort_by)) sort_by = 'created_at';
 
   Promise.all([
-    fetchArticlesByTopic(chooseTopic, maxResults, sort_by, order, pageRef),
-    countArticlesByTopic(chooseTopic),
+    countArticlesByTopic(req.params),
+    fetchArticlesByTopic(topic, sort_by, limit, p, order),
   ])
-    .then(([articles, total_count]) => {
-      if (articles.length === 0) return Promise.reject({ status: 404, message: 'Topic not Found' });
-      res.status(200).send({ articles, total_count });
+    .then(([total_count, articles]) => {
+      if (articles.length === 0) {
+        return Promise.reject({ status: 404, message: 'article not found' });
+      }
+      return res.status(200).send({ total_count, articles });
     })
-    .catch(err => next(err));
+    .catch(next);
 };
 
 exports.addArticle = (req, res, next) => {

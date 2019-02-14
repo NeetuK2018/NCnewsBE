@@ -12,27 +12,35 @@ exports.postingTopics = newTopic => connection
 
 exports.fetchArticlesByTopic = (
   chooseTopic,
-  maxResults = 10,
   sort_by = 'created_at',
+  limit = 10,
+  p = 1,
   order = 'DESC',
-  refPage = 1,
 ) => connection
   .select('articles.*')
-  .count('comments.comments_id AS comment_count')
+  .count('comments.comment_id AS comment_count')
   .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
   .from('articles')
   .groupBy('articles.article_id')
   .where({ topic: chooseTopic })
   .returning('*')
-  .limit(maxResults)
+  .limit(limit)
   .orderBy(sort_by, order)
-  .offset((refPage - 1) * maxResults);
+  .offset((p - 1) * limit);
 
-exports.countArticlesByTopic = chooseTopic => connection
+exports.countArticlesByTopic = ({ topic }) => connection
   .count('articles.title as total_count')
   .from('articles')
-  .where({ topic: chooseTopic })
+  .where({ topic })
   .returning('*');
+
+exports.countArticlesByTopic = ({ topic }) => connection
+  .select('topic')
+  .count({ total_count: 'topic' })
+  .from('articles')
+  .rightJoin('topics', 'topics.slug', '=', 'articles.topic')
+  .groupBy('topic')
+  .where('articles.topic', '=', topic);
 
 exports.postingArticles = newArticle => connection
   .insert(newArticle)

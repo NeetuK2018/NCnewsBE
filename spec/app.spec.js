@@ -13,6 +13,7 @@ describe('/api', () => {
     .then(() => connection.migrate.latest())
     .then(() => connection.seed.run()));
   after(() => connection.destroy());
+
   describe('/*', () => {
     it('GET status: responds 404 when route not found ie not a topic/user/article route', () => request
       .get('/api/*')
@@ -22,7 +23,8 @@ describe('/api', () => {
         expect(body.message).to.equal('page not found');
       }));
   });
-  it('POST status 404 : responds 404 when trying to post in a new route', () => request.post('/api/*').expect(404));
+  it.only('POST status 404 : responds 404 when trying to post in a new route', () => request.post('/api/*').expect(404));
+  
   describe('api/topics', () => {
     it('GET status:200 responds with an array of topic objects', () => request
       .get('/api/topics')
@@ -80,6 +82,7 @@ describe('/api', () => {
       expect(body.message).to.equal('columns cannot be empty');
     }));
   it('status: 405 server responds with invalid method', () => request.delete('/api/topics').expect(405));
+  
   describe('/topics/:topic/articles', () => {
     it('GET status:200 responds with an array of article objects', () => request
       .get('/api/topics/mitch/articles')
@@ -121,6 +124,7 @@ describe('/api', () => {
       .get('/api/topics/mitch/articles?limit=6')
       .expect(200)
       .then(({ body }) => {
+        // console.log('bye', body.articles);
         expect(body.articles).to.have.length(6);
       }));
     it('GET status: 200 each topics responds sorted by date DEFAULT CASE', () => request
@@ -128,6 +132,14 @@ describe('/api', () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.articles[0].title).to.equal('Living in the shadow of a great man');
+      }));
+    it('GET status: 200 will default to created_at sort when an invalid sort query is made', () => request
+      .get('/api/topics/mitch/articles?sort_by=neetu')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles[0].created_at).to.equal(
+          '2018-11-15T12:21:54.171Z',
+        );
       }));
     it('GET status: 200 responds sorted by comment_count', () => request
       .get('/api/topics/mitch/articles?sort_by=comment_count')
@@ -145,13 +157,16 @@ describe('/api', () => {
       .get('/api/topics/mitch/articles?p=2')
       .expect(200)
       .then(({ body }) => {
+        
         expect(body.articles).to.have.length(1);
       }));
     it('GET status:200 responds with a total_count', () => request
       .get('/api/topics/mitch/articles')
       .expect(200)
       .then(({ body }) => {
-        expect(body.total_count[0].total_count).to.have.equal('11');
+        // console.log(body);
+        expect(body).to.contain.keys('total_count');
+        expect(body.total_count[0].total_count).to.equal('11');
       }));
     it('POST status: 201 it inserts a new article into article table', () => request
       .post('/api/topics/mitch/articles')
@@ -174,14 +189,14 @@ describe('/api', () => {
         );
         expect(body.article.title).to.equal('crazylass in tech');
       }));
-    it('status: 400 trying to insert new articles into a non existent topic', () => request
+    it('status: 404 trying to insert new articles into a non existent topic', () => request
       .post('/api/topics/margesimpson/articles')
       .send({
         title: 'crazylass in tech',
         body: 'I will be supercoder',
         author: 'icellusedkars',
       })
-      .expect(400));
+      .expect(404));
     it('status: 400  when non existent column plus wrong format is posted', () => request
       .post('/api/topics/mitch/articles')
       .send({
@@ -194,6 +209,7 @@ describe('/api', () => {
         title: 'Living in the shadow of a great man',
       })
       .expect(400));
+    
     describe('/articles', () => {
       it('GET status:200 responds with an array of topic objects', () => request
         .get('/api/articles')
@@ -228,7 +244,8 @@ describe('/api', () => {
         .get('/api/articles')
         .expect(200)
         .then(({ body }) => {
-          expect(body.total_count).to.have.equal('12');
+          // console.log('total', body);
+          expect(body).to.have.equal('12');
         }));
       it('GET status: 200 each articles responds with a limit of 10 results DEFAULT CASE', () => request
         .get('/api/articles?limit=10')
@@ -248,6 +265,15 @@ describe('/api', () => {
         .then(({ body }) => {
           expect(body.articles[0].title).to.equal('Living in the shadow of a great man');
         }));
+      it('GET status: 200 will default to created_at sort when an invalid sort query is made', () => request
+        .get('/api/articles?sort_by=neetu')
+        .expect(200)
+        .then(({ body }) => {
+          // console.log("neyyyy", body.articles)
+          expect(body.articles[0].created_at).to.equal(
+            '2018-11-15T12:21:54.171Z',
+          );
+        }));
       it('GET status: 200 responds sorted by comment_count', () => request
         .get('/api/articles?sort_by=comment_count')
         .expect(200)
@@ -264,8 +290,10 @@ describe('/api', () => {
         .get('/api/articles?p=2')
         .expect(200)
         .then(({ body }) => {
+          // console.log("neetu", body.articles)
           expect(body.articles).to.have.length(2);
         }));
+     
       describe('/articles/:article_id', () => {
         it('GET status:200 responds with an article object for given article_id', () => request
           .get('/api/articles/1')
@@ -283,6 +311,7 @@ describe('/api', () => {
               'comment_count',
             );
           }));
+        it('status: 405 server responds with invalid method when trying to put', () => request.put('/api/articles/1').expect(405));
         it('GET status:responds 404 for trying to retrive a non existent article_id', () => request.get('/api/articles/100000').expect(404));
         it('PATCH status: 200 can change the votes property', () => request
           .patch('/api/articles/1')
@@ -304,16 +333,16 @@ describe('/api', () => {
           .patch('/api/articles/1')
           .send({ inc_votes: 'bbbb' })
           .expect(400));
-        it('DElETE status: 204 removes an articles by id', () => request.delete('/api/articles/7').expect(204));
-        it('DElETE responds 400 tries to remove a non existent article by id', () => request.delete('/api/articles/888').expect(404));
-        it('DELETE responds 400 if given an invalid article id', () => request.delete('/api/articles/opopo').expect(400));
+        it('DELETE status: 204 removes an articles by id', () => request.delete('/api/articles/7').expect(204));
+        it('DELETE responds 400 tries to remove a non existent article by id', () => request.delete('/api/articles/888').expect(404));
+        it('DELETE responds 404 if given an invalid article id', () => request.delete('/api/articles/opopo').expect(404));
         it('GET status:200 responds with an array of comments for given article id', () => request
           .get('/api/articles/1/comments')
           .expect(200)
           .then(({ body }) => {
             expect(body.comments).to.be.an('array');
             expect(body.comments[0]).to.contains.keys(
-              'comments_id',
+              'comment_id',
               'username',
               'article_id',
               'votes',
@@ -329,6 +358,7 @@ describe('/api', () => {
             expect(body.comments).to.have.length(10);
           }));
       });
+      it('status: 405 server responds with invalid method when trying to put', () => request.put('/api/articles/1/comments').expect(405));
       it('GET status: 200 takes a limit query to change the number of comments', () => request
         .get('/api/articles/1/comments?limit=4')
         .expect(200)
@@ -343,11 +373,11 @@ describe('/api', () => {
         expect(body.comments[0].created_at).to.equal('2016-11-22T12:36:03.389Z');
       }));
   });
-  it('GET status: 200 responds with sorted by comments_id', () => request
-    .get('/api/articles/1/comments?sort_by=comments_id')
+  it('GET status: 200 responds with sorted by comment_id', () => request
+    .get('/api/articles/1/comments?sort_by=comment_id')
     .expect(200)
     .then(({ body }) => {
-      expect(body.comments[0].comments_id).to.equal(18);
+      expect(body.comments[0].comment_id).to.equal(18);
     }));
   it('GET status:200 responds with p at 1 with limit of 10 DEFAULT CASE', () => request
     .get('/api/articles/1/comments')
@@ -385,14 +415,14 @@ describe('/api', () => {
         'worst thing about buying online is having to get up and find your debit card',
       );
     }));
-  it('POST status:400 adding a comment to a non existent article_id', () => request
+  it('POST status:404 adding a comment to a non existent article_id', () => request
     .post('/api/articles/1899/comments')
-    .expect(400)
+    .expect(404)
     .send({
       username: 'icellusedkars',
       body: 'worst thing about buying online is having to get up and find your debit card',
     })
-    .expect(400));
+    .expect(404));
   it('POST status:400 adding a comment missing a body input', () => request
     .post('/api/articles/1/comments')
     .expect(400)
@@ -425,9 +455,9 @@ describe('/api', () => {
     .patch('/api/articles/1/comments/12')
     .send({ inc_votes: 'bbbb' })
     .expect(400));
-  it('DElETE status: 204 removes comment by article_id', () => request.delete('/api/articles/1/comments/5').expect(204));
-  it('DElETE status: 404 trying to removes comment by non existent article_id', () => request.delete('/api/articles/1000/comments/5').expect(404));
-  it('DElETE status: 400 trying to removes comment by invalid article_id', () => request.delete('/api/articles/bbb/comments/5').expect(400));
+  it('DELETE status: 204 removes a comment from an article by its ID', () => request.delete('/api/articles/9/comments/1').expect(204));
+  it('DELETE status: 404 trying to removes comment by non existent article_id', () => request.delete('/api/articles/1000/comments/5').expect(404));
+  it('DELETE status: 404 trying to removes comment by invalid article_id', () => request.delete('/api/articles/bbb/comments/5').expect(404));
   describe('api/users', () => {
     it('GET status:200 responds with an array of users objects', () => request
       .get('/api/users')
@@ -463,28 +493,34 @@ describe('/api', () => {
       username: 'icellusedkars',
       name: 'sam',
       avatar_url: 'https://avatars2.githubusercontent.com/u/24604688?s=460&v=4',
-    }).expect(400));
+    })
+    .expect(400));
   it('POST status: 400 incomplete detail', () => request
     .post('/api/users')
     .send({
       username: 'neetgurl',
-    }).expect(400));
+    })
+    .expect(400));
   it('POST status: 400 input of incorrect format', () => request
     .post('/api/users')
     .send({
       name: 'neetgurl',
-    }).expect(400));
-  describe('/users/:username', () => {
+    })
+    .expect(400));
+  
+    describe('/users/:username', () => {
     it('GET status:200 responds with an user object', () => request
       .get('/api/users/icellusedkars')
       .expect(200)
       .then(({ body }) => {
-        expect(body.users).to.be.an('object');
-        expect(body.users.username).to.equal('icellusedkars');
-        expect(body.users).to.contains.keys('name', 'username', 'avatar_url');
+        expect(body.user).to.be.an('object');
+        expect(body.user.username).to.equal('icellusedkars');
+        expect(body.user).to.contains.keys('name', 'username', 'avatar_url');
       }));
   });
+  it('status: 405 server responds with invalid method', () => request.delete('/api/users/icellusedkars').expect(405));
   it('responds status404: when looking for a non existent user', () => request.get('/api/users/homersimpson').expect(404));
+  
   describe('/users/:username/articles', () => {
     it('GET status: 200 returns an array of article objects by the given user', () => request
       .get('/api/users/icellusedkars/articles')
@@ -501,11 +537,11 @@ describe('/api', () => {
           'topic',
         );
       }));
+    it('status: 405 server responds with invalid method', () => request.delete('/api/users/icellusedkars/articles').expect(405));
     it('GET status:200 responds with a total_count', () => request
       .get('/api/users/icellusedkars/articles')
       .expect(200)
       .then(({ body }) => {
-        // console.log(body);
         expect(body.total_count).to.have.equal('6');
       }));
     it('GET status:responds 404 for trying to retrieve an array of articles objects for non existent user', () => request.get('/api/users/lisasimpson/articles').expect(404));
@@ -543,6 +579,7 @@ describe('/api', () => {
       .get('/api/users/icellusedkars/articles?p=2')
       .expect(200)
       .then(({ body }) => {
+        // console.log("hiya", body.articles)
         expect(body.articles).to.have.length(0);
       }));
   });

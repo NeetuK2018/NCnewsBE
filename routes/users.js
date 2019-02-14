@@ -15,8 +15,14 @@ usersRouter
   .post(addUser)
   .all(handle405);
 
-usersRouter.route('/:username').get(getUserByUsername);
+usersRouter
+  .route('/:username')
+  .get(getUserByUsername)
+  .all(handle405);
 
-usersRouter.route('/:username/articles').get(getArticlesbyUsername);
+usersRouter
+  .route('/:username/articles')
+  .get(getArticlesbyUsername)
+  .all(handle405);
 
 module.exports = usersRouter;

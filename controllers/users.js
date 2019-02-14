@@ -27,9 +27,9 @@ exports.getUserByUsername = (req, res, next) => {
   const { username } = req.params;
   // chnaged users to user
   fetchUsername(username)
-    .then(([users]) => {
-      if (users) {
-        res.send({ users });
+    .then(([user]) => {
+      if (user) {
+        res.send({ user });
       } else next({ status: 404, message: 'username does not exist' });
     })
     .catch(next);

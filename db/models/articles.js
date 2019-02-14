@@ -1,19 +1,19 @@
 const connection = require('../connection');
 
-exports.fetchArticles = (maxResults = 10, sort_by = 'created_at', order = 'DESC', refPage = 1) => connection
+exports.fetchArticles = (limit = 10, sort_by = 'created_at', p = 1, order = 'DESC') => connection
   .select('articles.*')
-  .count('comments.comments_id AS comment_count')
+  .count('comments.comment_id AS comment_count')
   .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
   .from('articles')
   .groupBy('articles.article_id')
   .returning('*')
-  .limit(maxResults)
+  .limit(limit)
   .orderBy(sort_by, order)
-  .offset((refPage - 1) * maxResults);
+  .offset((p - 1) * limit);
 
 exports.fetchArticlesByArticleID = article_id => connection
   .select('articles.*')
-  .count('comments.comments_id AS comment_count')
+  .count('comments.comment_id AS comment_count')
   .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
   .from('articles')
   .groupBy('articles.article_id')
@@ -36,8 +36,8 @@ exports.removeArticle = article_id => connection('articles')
 
 exports.fetchCommentsByArticle_id = (
   article_id,
-  limit = 10,
   sort_by = 'created_at',
+  limit = 10,
   p = 1,
   order = 'DESC',
 ) => connection
@@ -54,15 +54,15 @@ exports.addComment = newComment => connection
   .into('comments')
   .returning('*');
 
-exports.changingVote = (article_id, comments_id, inc_votes) => connection
+exports.changingVote = (article_id, comment_id, inc_votes) => connection
   .select('*')
   .from('comments')
   .where({ article_id })
-  .where({ comments_id })
+  .where({ comment_id })
   .increment('votes', inc_votes)
   .returning('*');
 
-exports.removeComment = (article_id, comments_id) => connection('comments')
+exports.removeComment = (article_id, comment_id) => connection('comments')
   .where({ 'comments.article_id': article_id })
-  .where({ 'comments.comments_id': comments_id })
+  .where({ 'comments.comment_id': comment_id })
   .del();

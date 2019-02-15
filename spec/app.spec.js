@@ -13,18 +13,17 @@ describe('/api', () => {
     .then(() => connection.migrate.latest())
     .then(() => connection.seed.run()));
   after(() => connection.destroy());
-
   describe('/*', () => {
     it('GET status: responds 404 when route not found ie not a topic/user/article route', () => request
-      .get('/api/*')
+      .get('/api/missing')
       .expect(404)
       .then(({ body }) => {
+        // console.log("hi", body)
         expect(body).to.be.an('object');
-        expect(body.message).to.equal('page not found');
+        expect(body.message).to.equal('topics not found');
       }));
   });
-  it.only('POST status 404 : responds 404 when trying to post in a new route', () => request.post('/api/*').expect(404));
-  
+  it('POST status 404 : responds 404 when trying to post in a new route', () => request.post('/api/*').expect(404));
   describe('api/topics', () => {
     it('GET status:200 responds with an array of topic objects', () => request
       .get('/api/topics')
@@ -82,7 +81,6 @@ describe('/api', () => {
       expect(body.message).to.equal('columns cannot be empty');
     }));
   it('status: 405 server responds with invalid method', () => request.delete('/api/topics').expect(405));
-  
   describe('/topics/:topic/articles', () => {
     it('GET status:200 responds with an array of article objects', () => request
       .get('/api/topics/mitch/articles')
@@ -137,9 +135,7 @@ describe('/api', () => {
       .get('/api/topics/mitch/articles?sort_by=neetu')
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles[0].created_at).to.equal(
-          '2018-11-15T12:21:54.171Z',
-        );
+        expect(body.articles[0].created_at).to.equal('2018-11-15T12:21:54.171Z');
       }));
     it('GET status: 200 responds sorted by comment_count', () => request
       .get('/api/topics/mitch/articles?sort_by=comment_count')
@@ -157,16 +153,15 @@ describe('/api', () => {
       .get('/api/topics/mitch/articles?p=2')
       .expect(200)
       .then(({ body }) => {
-        
         expect(body.articles).to.have.length(1);
       }));
     it('GET status:200 responds with a total_count', () => request
       .get('/api/topics/mitch/articles')
       .expect(200)
       .then(({ body }) => {
-        // console.log(body);
+        console.log(body);
         expect(body).to.contain.keys('total_count');
-        expect(body.total_count[0].total_count).to.equal('11');
+        expect(body.total_count).to.equal('11');
       }));
     it('POST status: 201 it inserts a new article into article table', () => request
       .post('/api/topics/mitch/articles')
@@ -209,7 +204,6 @@ describe('/api', () => {
         title: 'Living in the shadow of a great man',
       })
       .expect(400));
-    
     describe('/articles', () => {
       it('GET status:200 responds with an array of topic objects', () => request
         .get('/api/articles')
@@ -244,8 +238,8 @@ describe('/api', () => {
         .get('/api/articles')
         .expect(200)
         .then(({ body }) => {
-          // console.log('total', body);
-          expect(body).to.have.equal('12');
+          console.log('total', body);
+          expect(body.total_count).to.equal('12');
         }));
       it('GET status: 200 each articles responds with a limit of 10 results DEFAULT CASE', () => request
         .get('/api/articles?limit=10')
@@ -270,9 +264,7 @@ describe('/api', () => {
         .expect(200)
         .then(({ body }) => {
           // console.log("neyyyy", body.articles)
-          expect(body.articles[0].created_at).to.equal(
-            '2018-11-15T12:21:54.171Z',
-          );
+          expect(body.articles[0].created_at).to.equal('2018-11-15T12:21:54.171Z');
         }));
       it('GET status: 200 responds sorted by comment_count', () => request
         .get('/api/articles?sort_by=comment_count')
@@ -293,7 +285,6 @@ describe('/api', () => {
           // console.log("neetu", body.articles)
           expect(body.articles).to.have.length(2);
         }));
-     
       describe('/articles/:article_id', () => {
         it('GET status:200 responds with an article object for given article_id', () => request
           .get('/api/articles/1')
@@ -507,8 +498,7 @@ describe('/api', () => {
       name: 'neetgurl',
     })
     .expect(400));
-  
-    describe('/users/:username', () => {
+  describe('/users/:username', () => {
     it('GET status:200 responds with an user object', () => request
       .get('/api/users/icellusedkars')
       .expect(200)
@@ -520,7 +510,6 @@ describe('/api', () => {
   });
   it('status: 405 server responds with invalid method', () => request.delete('/api/users/icellusedkars').expect(405));
   it('responds status404: when looking for a non existent user', () => request.get('/api/users/homersimpson').expect(404));
-  
   describe('/users/:username/articles', () => {
     it('GET status: 200 returns an array of article objects by the given user', () => request
       .get('/api/users/icellusedkars/articles')

@@ -32,15 +32,8 @@ exports.countArticlesByTopic = ({ topic }) => connection
   .count('articles.title as total_count')
   .from('articles')
   .where({ topic })
-  .returning('*');
-
-exports.countArticlesByTopic = ({ topic }) => connection
-  .select('topic')
-  .count({ total_count: 'topic' })
-  .from('articles')
-  .rightJoin('topics', 'topics.slug', '=', 'articles.topic')
-  .groupBy('topic')
-  .where('articles.topic', '=', topic);
+  .returning('*')
+  .then(([{ total_count }]) => total_count);
 
 exports.postingArticles = newArticle => connection
   .insert(newArticle)

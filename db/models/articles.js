@@ -28,7 +28,8 @@ exports.modifyVotes = (article_id, inc_votes) => connection('articles')
 exports.countArticles = () => connection
   .count('articles.article_id as total_count')
   .from('articles')
-  .returning('*');
+  .returning('*')
+  .then(([{ total_count }]) => total_count);
 
 exports.removeArticle = article_id => connection('articles')
   .where({ 'articles.article_id': article_id })

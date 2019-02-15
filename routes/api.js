@@ -8,7 +8,7 @@ const endPoints = require('../home');
 apiRouter.use('/topics', topicsRouter);
 apiRouter.use('/articles', articlesRouter);
 apiRouter.use('/users', usersRouter);
-apiRouter.use('/', (req, res, next) => {
+apiRouter.get('/', (req, res, next) => {
   res.status(200).send(endPoints);
 });
 

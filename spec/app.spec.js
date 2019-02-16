@@ -327,107 +327,109 @@ describe('/api', () => {
         it('DELETE status: 204 removes an articles by id', () => request.delete('/api/articles/7').expect(204));
         it('DELETE responds 400 tries to remove a non existent article by id', () => request.delete('/api/articles/888').expect(404));
         it('DELETE responds 404 if given an invalid article id', () => request.delete('/api/articles/opopo').expect(404));
-        it('GET status:200 responds with an array of comments for given article id', () => request
-          .get('/api/articles/1/comments')
+        describe('/comments', () => {
+          it('GET status:200 responds with an array of comments for given article id', () => request
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.be.an('array');
+              expect(body.comments[0]).to.contains.keys(
+                'comment_id',
+                'username',
+                'article_id',
+                'votes',
+                'created_at',
+                'body',
+              );
+            }));
+          it('GET status:responds 404 when trying to retrieve comments for a nonexistent article_id', () => request.get('/api/articles/99/comments').expect(404));
+          it('GET status: 200 each responds with a limit of 10 results DEFAULT CASE', () => request
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.have.length(10);
+            }));
+        });
+        it('status: 405 server responds with invalid method when trying to put', () => request.put('/api/articles/1/comments').expect(405));
+        it('GET status: 200 takes a limit query to change the number of comments', () => request
+          .get('/api/articles/1/comments?limit=4')
           .expect(200)
           .then(({ body }) => {
-            expect(body.comments).to.be.an('array');
-            expect(body.comments[0]).to.contains.keys(
-              'comment_id',
-              'username',
-              'article_id',
-              'votes',
-              'created_at',
-              'body',
-            );
-          }));
-        it('GET status:responds 404 when trying to retrieve comments for a nonexistent article_id', () => request.get('/api/articles/99/comments').expect(404));
-        it('GET status: 200 each responds with a limit of 10 results DEFAULT CASE', () => request
-          .get('/api/articles/1/comments')
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.comments).to.have.length(10);
+            expect(body.comments).to.have.length(4);
           }));
       });
-      it('status: 405 server responds with invalid method when trying to put', () => request.put('/api/articles/1/comments').expect(405));
-      it('GET status: 200 takes a limit query to change the number of comments', () => request
-        .get('/api/articles/1/comments?limit=4')
+      it('GET status: 200 responds with sorted by date DEFAULT CASE', () => request
+        .get('/api/articles/1/comments')
         .expect(200)
         .then(({ body }) => {
-          expect(body.comments).to.have.length(4);
+          expect(body.comments[0].created_at).to.equal('2016-11-22T12:36:03.389Z');
         }));
     });
-    it('GET status: 200 responds with sorted by date DEFAULT CASE', () => request
+    it('GET status: 200 responds with sorted by comment_id', () => request
+      .get('/api/articles/1/comments?sort_by=comment_id')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments[0].comment_id).to.equal(18);
+      }));
+    it('GET status:200 responds with p at 1 with limit of 10 DEFAULT CASE', () => request
       .get('/api/articles/1/comments')
       .expect(200)
       .then(({ body }) => {
-        expect(body.comments[0].created_at).to.equal('2016-11-22T12:36:03.389Z');
+        expect(body.comments).to.have.length(10);
       }));
+    it('GET status:200 responds with p at 2 ', () => request
+      .get('/api/articles/1/comments?p=2')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).to.have.length(3);
+      }));
+    it('GET status:200 respond order is descending DEFAULT CASE', () => request
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments[0].username).to.equal('butter_bridge');
+      }));
+    it('GET status:200 respond order is ascending', () => request
+      .get('/api/articles/1/comments?sort_by=created_at&order=asc')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments[0].username).to.equal('butter_bridge');
+      }));
+    it('POST status:201 adding a comment by article_id', () => request
+      .post('/api/articles/1/comments')
+      .expect(201)
+      .send({
+        username: 'icellusedkars',
+        body: 'worst thing about buying online is having to get up and find your debit card',
+      })
+      .then(({ body }) => {
+        expect(body.comment.body).to.equal(
+          'worst thing about buying online is having to get up and find your debit card',
+        );
+      }));
+    it('POST status:404 adding a comment to a non existent article_id', () => request
+      .post('/api/articles/1899/comments')
+      .expect(404)
+      .send({
+        username: 'icellusedkars',
+        body: 'worst thing about buying online is having to get up and find your debit card',
+      })
+      .expect(404));
+    it('POST status:400 adding a comment missing a body input', () => request
+      .post('/api/articles/1/comments')
+      .expect(400)
+      .send({
+        username: 'icellusedkars',
+      })
+      .expect(400));
+    it('POST status:400 adding a comment missing a correct input', () => request
+      .post('/api/articles/1/comments')
+      .expect(400)
+      .send({
+        user: 'icellusedkars',
+      })
+      .expect(400));
   });
-  it('GET status: 200 responds with sorted by comment_id', () => request
-    .get('/api/articles/1/comments?sort_by=comment_id')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.comments[0].comment_id).to.equal(18);
-    }));
-  it('GET status:200 responds with p at 1 with limit of 10 DEFAULT CASE', () => request
-    .get('/api/articles/1/comments')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.comments).to.have.length(10);
-    }));
-  it('GET status:200 responds with p at 2 ', () => request
-    .get('/api/articles/1/comments?p=2')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.comments).to.have.length(3);
-    }));
-  it('GET status:200 respond order is descending DEFAULT CASE', () => request
-    .get('/api/articles/1/comments')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.comments[0].username).to.equal('butter_bridge');
-    }));
-  it('GET status:200 respond order is ascending', () => request
-    .get('/api/articles/1/comments?sort_by=created_at&order=asc')
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.comments[0].username).to.equal('butter_bridge');
-    }));
-  it('POST status:201 adding a comment by article_id', () => request
-    .post('/api/articles/1/comments')
-    .expect(201)
-    .send({
-      username: 'icellusedkars',
-      body: 'worst thing about buying online is having to get up and find your debit card',
-    })
-    .then(({ body }) => {
-      expect(body.comment.body).to.equal(
-        'worst thing about buying online is having to get up and find your debit card',
-      );
-    }));
-  it('POST status:404 adding a comment to a non existent article_id', () => request
-    .post('/api/articles/1899/comments')
-    .expect(404)
-    .send({
-      username: 'icellusedkars',
-      body: 'worst thing about buying online is having to get up and find your debit card',
-    })
-    .expect(404));
-  it('POST status:400 adding a comment missing a body input', () => request
-    .post('/api/articles/1/comments')
-    .expect(400)
-    .send({
-      username: 'icellusedkars',
-    })
-    .expect(400));
-  it('POST status:400 adding a comment missing a correct input', () => request
-    .post('/api/articles/1/comments')
-    .expect(400)
-    .send({
-      user: 'icellusedkars',
-    })
-    .expect(400));
   it('PATCH status: 200 can change the votes property', () => request
     .patch('/api/articles/1/comments/12')
     .send({ inc_votes: 12 })

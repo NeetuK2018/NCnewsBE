@@ -23,6 +23,7 @@ exports.seed = (connection, Promise) => connection.migrate
   .then(([articleRows]) => {
     const articlesLookup = articleRef(articleRows);
     const formattedComms = formatComments(commentData, articlesLookup);
+
     return connection('comments')
       .insert(formattedComms)
       .returning('*');

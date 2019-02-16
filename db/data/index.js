@@ -1,7 +1,7 @@
 const test = require('./test-data');
 const development = require('./development-data');
 
-const ENV = process.env.NODE_ENV || 'development';
+const ENV = process.env.NODE_ENV === 'test' ? 'test' : 'development';
 
 const data = { test, development };
 

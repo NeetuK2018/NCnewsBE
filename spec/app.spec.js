@@ -159,7 +159,7 @@ describe('/api', () => {
       .get('/api/topics/mitch/articles')
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
+        // console.log(body);
         expect(body).to.contain.keys('total_count');
         expect(body.total_count).to.equal('11');
       }));
@@ -238,7 +238,7 @@ describe('/api', () => {
         .get('/api/articles')
         .expect(200)
         .then(({ body }) => {
-          console.log('total', body);
+          // console.log('total', body);
           expect(body.total_count).to.equal('12');
         }));
       it('GET status: 200 each articles responds with a limit of 10 results DEFAULT CASE', () => request

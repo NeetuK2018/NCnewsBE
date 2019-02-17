@@ -10,7 +10,7 @@ exports.getTopics = (req, res, next) => {
   fetchTopics()
     .then((topics) => {
       // console.log(topics);
-      if (topics.length === 0) return Promise.reject({ status: 404, message: 'topics not found' });
+      if (topics.length === 0) return Promise.reject({ status: 404, message: 'page not found' });
 
       res.status(200).send({ topics });
     })

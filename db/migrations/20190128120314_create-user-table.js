@@ -4,7 +4,7 @@ exports.up = function (connection, Promise) {
       .string('username')
       .primary()
       .notNullable();
-    userTable.string('avatar_url').notNullable();
+    userTable.string('avatar_url', 500).notNullable();
     userTable.string('name').notNullable();
   });
 };

@@ -2,31 +2,37 @@ module.exports = [
   {
     username: 'tickle122',
     name: 'Tom Tickle',
-    avatar_url: 'https://www.spiritsurfers.net/monastery/wp-content/uploads/_41500270_mrtickle.jpg',
+    avatar_url:
+      'https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Blonde&facialHairType=MoustacheMagnum&facialHairColor=Blonde&clotheType=Hoodie&clotheColor=Blue03&eyeType=Happy&eyebrowType=RaisedExcited&mouthType=Twinkle&skinColor=Light',
   },
   {
     username: 'grumpy19',
     name: 'Paul Grump',
-    avatar_url: 'https://www.tumbit.com/profile-image/4/original/mr-grumpy.jpg',
+    avatar_url:
+      'https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairSides&accessoriesType=Prescription02&hairColor=Auburn&facialHairType=BeardLight&facialHairColor=Auburn&clotheType=Hoodie&clotheColor=Blue03&eyeType=Side&eyebrowType=AngryNatural&mouthType=Serious&skinColor=Light',
   },
   {
     username: 'happyamy2016',
     name: 'Amy Happy',
-    avatar_url: 'https://vignette1.wikia.nocookie.net/mrmen/images/7/7f/Mr_Happy.jpg/revision/latest?cb=20140102171729',
+    avatar_url:
+      'https://avataaars.io/?avatarStyle=Transparent&topType=LongHairCurvy&accessoriesType=Blank&hairColor=Brown&facialHairType=Blank&clotheType=Hoodie&clotheColor=Blue03&eyeType=Happy&eyebrowType=RaisedExcited&mouthType=Twinkle&skinColor=Brown',
   },
   {
     username: 'cooljmessy',
     name: 'Peter Messy',
-    avatar_url: 'https://i.imgur.com/WfX0Neu.jpg',
+    avatar_url:
+      'https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortFlat&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=Hoodie&clotheColor=Blue03&eyeType=Wink&eyebrowType=RaisedExcited&mouthType=Tongue&skinColor=Pale',
   },
   {
     username: 'weegembump',
     name: 'Gemma Bump',
-    avatar_url: 'https://www.upandrunning.co.uk/media/catalog/product/cache/1/image/650x/040ec09b1e35df139433887a97daa66f/m/r/mr-bump.jpg',
+    avatar_url:
+      'https://avataaars.io/?avatarStyle=Transparent&topType=LongHairCurly&accessoriesType=Kurt&hairColor=PastelPink&facialHairType=Blank&clotheType=Hoodie&clotheColor=Blue03&eyeType=Hearts&eyebrowType=RaisedExcitedNatural&mouthType=Smile&skinColor=DarkBrown',
   },
   {
     username: 'jessjelly',
     name: 'Jess Jelly',
-    avatar_url: 'https://s-media-cache-ak0.pinimg.com/564x/39/62/ec/3962eca164e60cf46f979c1f57d4078b.jpg',
+    avatar_url:
+      'https://avataaars.io/?avatarStyle=Transparent&topType=LongHairCurvy&accessoriesType=Round&hairColor=Platinum&facialHairType=Blank&clotheType=Hoodie&clotheColor=Blue03&eyeType=Happy&eyebrowType=RaisedExcited&mouthType=Smile&skinColor=Pale',
   },
 ];

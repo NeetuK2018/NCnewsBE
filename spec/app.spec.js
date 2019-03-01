@@ -472,7 +472,8 @@ describe('/api', () => {
         .send({
           username: 'neetgurl',
           name: 'neetu',
-          avatar_url: 'https://www.codingWitch.com/wp-content/uploads/2019/01/recurssionPotion.jpg',
+          avatar_url:
+              'https://www.codingWitch.com/wp-content/uploads/2019/01/recurssionPotion.jpg',
         })
         .expect(201)
         .then(({ body }) => {
@@ -571,7 +572,7 @@ describe('/api', () => {
         .get('/api/users/icellusedkars/articles?p=2')
         .expect(200)
         .then(({ body }) => {
-        // console.log("hiya", body.articles)
+          // console.log("hiya", body.articles)
           expect(body.articles).to.have.length(0);
         }));
       describe('/api', () => {
@@ -588,8 +589,8 @@ describe('/api', () => {
               '/articles/:article_id/comments/:comment_id',
               '/api/users',
               '/users/:username',
-              '/users/:username/articles'
-);
+              '/users/:username/articles',
+            );
           }));
       });
     });

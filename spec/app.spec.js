@@ -18,7 +18,6 @@ describe('/api', () => {
       .get('/api/missing')
       .expect(404)
       .then(({ body }) => {
-        // console.log("hi", body)
         expect(body).to.be.an('object');
         expect(body.message).to.equal('topics not found');
       }));
@@ -122,7 +121,6 @@ describe('/api', () => {
       .get('/api/topics/mitch/articles?limit=6')
       .expect(200)
       .then(({ body }) => {
-        // console.log('bye', body.articles);
         expect(body.articles).to.have.length(6);
       }));
     it('GET status: 200 each topics responds sorted by date DEFAULT CASE', () => request
@@ -159,7 +157,6 @@ describe('/api', () => {
       .get('/api/topics/mitch/articles')
       .expect(200)
       .then(({ body }) => {
-        // console.log(body);
         expect(body).to.contain.keys('total_count');
         expect(body.total_count).to.equal('11');
       }));
@@ -238,7 +235,6 @@ describe('/api', () => {
         .get('/api/articles')
         .expect(200)
         .then(({ body }) => {
-          // console.log('total', body);
           expect(body.total_count).to.equal('12');
         }));
       it('GET status: 200 each articles responds with a limit of 10 results DEFAULT CASE', () => request
@@ -263,7 +259,6 @@ describe('/api', () => {
         .get('/api/articles?sort_by=neetu')
         .expect(200)
         .then(({ body }) => {
-          // console.log("neyyyy", body.articles)
           expect(body.articles[0].created_at).to.equal('2018-11-15T12:21:54.171Z');
         }));
       it('GET status: 200 responds sorted by comment_count', () => request
@@ -282,7 +277,6 @@ describe('/api', () => {
         .get('/api/articles?p=2')
         .expect(200)
         .then(({ body }) => {
-          // console.log("neetu", body.articles)
           expect(body.articles).to.have.length(2);
         }));
       describe('/articles/:article_id', () => {
@@ -309,7 +303,6 @@ describe('/api', () => {
           .send({ inc_votes: -1 })
           .expect(200)
           .then(({ body }) => {
-            // console.log(body.articles);
             expect(body.article.votes).to.equal(99);
           }));
         it('PATCH status: 200 can change the votes property', () => request
@@ -317,7 +310,6 @@ describe('/api', () => {
           .send({ inc_votes: 2 })
           .expect(200)
           .then(({ body }) => {
-            // console.log(body);
             expect(body.article.votes).to.equal(102);
           }));
         it('PATCH status: 400 when an integer is not passed', () => request
@@ -572,7 +564,6 @@ describe('/api', () => {
         .get('/api/users/icellusedkars/articles?p=2')
         .expect(200)
         .then(({ body }) => {
-          // console.log("hiya", body.articles)
           expect(body.articles).to.have.length(0);
         }));
       describe('/api', () => {
